@@ -1,0 +1,16 @@
+{
+  "name": "platform-fighter",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "serve": "vite preview"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": ">=4.4.4 <5",
+    "vite": ">=2.6.10 <3"
+  }
+}
