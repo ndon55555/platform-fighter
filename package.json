@@ -15,5 +15,9 @@
     "eslint": "^8.39.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.2"
+  },
+  "dependencies": {
+    "detect-collisions": "^8.0.1",
+    "two.js": "^0.8.10"
   }
 }
