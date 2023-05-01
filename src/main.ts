@@ -33,11 +33,11 @@ document.body.appendChild(canvas)
 const context = canvas.getContext("2d")
 
 const system = new System()
-const leftBound = new Line({x: 0, y: 0}, {x: 0, y: canvas.height}, {isStatic: true})
-const rightBound = new Line({x: canvas.width, y: 0}, {x: canvas.width, y: canvas.height}, {isStatic: true})
-const botBound = new Line({x: 0, y: 0}, {x: canvas.width, y: 0}, {isStatic: true})
-const topBound = new Line({x: 0, y: canvas.height}, {x: canvas.width, y: canvas.height}, {isStatic: true})
-const box = new Box({x: 250, y: 250}, 50, 50, {isCentered: true})
+const leftBound = new Line({ x: 0, y: 0 }, { x: 0, y: canvas.height }, { isStatic: true })
+const rightBound = new Line({ x: canvas.width, y: 0 }, { x: canvas.width, y: canvas.height }, { isStatic: true })
+const botBound = new Line({ x: 0, y: 0 }, { x: canvas.width, y: 0 }, { isStatic: true })
+const topBound = new Line({ x: 0, y: canvas.height }, { x: canvas.width, y: canvas.height }, { isStatic: true })
+const box = new Box({ x: 250, y: 250 }, 50, 50, { isCentered: true })
 system.insert(box)
 system.insert(leftBound)
 system.insert(rightBound)
@@ -97,21 +97,21 @@ function updateState() {
             })
             .otherwise(() => null)
     })
-    let oldPosition = {x: box.x, y: box.y}
-    let newPosition = {x: newX, y: newY}
+    let oldPosition = { x: box.x, y: box.y }
+    let newPosition = { x: newX, y: newY }
 
     if (system.checkCollision(new Point(newPosition), box)) {
-        newPosition = {x: newX, y: newY + 1}
+        newPosition = { x: newX, y: newY + 1 }
     }
 
     if (!_.isEqual(oldPosition, newPosition)) {
         const hit = system.raycast(oldPosition, newPosition)
         if (hit) {
-            const {point, body} = hit
+            const { point, body } = hit
 
 
             if (body == box) {
-                oldPosition = {x: point.x, y: point.y - 1}
+                oldPosition = { x: point.x, y: point.y - 1 }
                 const hit2 = system.raycast(oldPosition, newPosition)
                 if (hit2) {
                     newY = botBound.y + 1
