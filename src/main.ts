@@ -1,11 +1,10 @@
 import { Box, Line, System } from "detect-collisions"
-import _ from 'lodash'
 import { match } from 'ts-pattern'
 import { setupCounter } from './counter.ts'
 import './style.css'
 import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
 import { defer } from "./util.ts"
+import viteLogo from '/vite.svg'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -87,8 +86,7 @@ window.addEventListener('keyup', (event: KeyboardEvent) => {
     console.log(`Key released: ${event.key}`)
 })
 
-function updateState() {
-    let newY = box.y + verticalSpeed
+function nextX() {
     let newX = box.x
     pressedKeys.forEach((key: string) => {
         match(key)
@@ -100,32 +98,47 @@ function updateState() {
             })
             .otherwise(() => null)
     })
-    const oldPosition = { x: box.x, y: box.y }
-    const newPosition = { x: newX, y: newY }
 
-    if (newPosition.y < oldPosition.y) { // Implies the box is falling now
+    return newX
+}
+
+function nextY(nextX: number) {
+    let newY = box.y + verticalSpeed
+    const oldPosition = { x: box.x, y: box.y }
+    const newPosition = { x: nextX, y: newY }
+
+    if (newY < box.y) { // Implies the box is falling now
         // Remove the box from the system temporarily to avoid detection collisions with itself
         system.remove(box)
         defer(() => system.insert(box), () => {
-            if (!_.isEqual(oldPosition, newPosition)) {
-                const hit = system.raycast(oldPosition, newPosition)
-                if (hit) {
-                    // TODO: check that the ground was hit
-                    // Set the new y in a higher position so that the shape separation will cause the box to be pushed up
-                    newY = botBound.y + 1
-                    console.info(oldPosition, newPosition)
-                }
+            const hit = system.raycast(oldPosition, newPosition)
+            if (hit) {
+                // TODO: check that the ground was hit
+                // Set the new y in a higher position so that the shape separation will cause the box to be pushed up
+                newY = botBound.y + 1
+                console.info(oldPosition, newPosition)
             }
             system.insert(box)
         })
     }
+
+    return newY
+}
+
+function updateState() {
+    // Update box position
+    const newX = nextX()
+    const newY = nextY(newX)
     box.setPosition(newX, newY)
 
-    system.separate()
+    // Update box speed
     verticalSpeed -= gravity
     if (system.checkCollision(box, botBound)) {
         verticalSpeed = 0
     }
+
+    // Resolve collisions
+    system.separate()
 }
 
 function render() {
