@@ -77,4 +77,4 @@ function updateState() {
     context!.stroke()
 }
 
-setInterval(updateState, 1000/60)
+setInterval(updateState, 1000 / 60)

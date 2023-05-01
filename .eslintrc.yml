@@ -20,3 +20,7 @@ rules:
   indent:
     - error
     - 4
+  space-infix-ops:
+    - error
+  no-multi-spaces:
+    - error
