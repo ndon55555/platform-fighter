@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "detect-collisions": "^8.0.1",
+    "ts-pattern": "^4.2.2",
     "two.js": "^0.8.10"
   }
 }

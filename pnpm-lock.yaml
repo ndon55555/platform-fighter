@@ -4,6 +4,9 @@ dependencies:
   detect-collisions:
     specifier: ^8.0.1
     version: 8.0.1
+  ts-pattern:
+    specifier: ^4.2.2
+    version: 4.2.2
   two.js:
     specifier: ^0.8.10
     version: 0.8.10
@@ -1195,6 +1198,10 @@ packages:
     dependencies:
       is-number: 7.0.0
     dev: true
+
+  /ts-pattern@4.2.2:
+    resolution: {integrity: sha512-qzJMo2pbkUJWusRH5o8xR+xogn6RmvViyUgwBFTtRENLse470clCGjHDf6haWGZ1AOmk8XkEohUoBW8Uut6Scg==}
+    dev: false
 
   /tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
