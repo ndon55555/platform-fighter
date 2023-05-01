@@ -34,8 +34,8 @@ const context = canvas.getContext("2d")
 const system = new System()
 const leftBound = new Line({x: 0, y: 0}, {x: 0, y: canvas.height}, {isStatic: true})
 const rightBound = new Line({x: canvas.width, y: 0}, {x: canvas.width, y: canvas.height}, {isStatic: true})
-const topBound = new Line({x: 0, y: 0}, {x: canvas.width, y: 0}, {isStatic: true})
-const botBound = new Line({x: 0, y: canvas.height}, {x: canvas.width, y: canvas.height}, {isStatic: true})
+const botBound = new Line({x: 0, y: 0}, {x: canvas.width, y: 0}, {isStatic: true})
+const topBound = new Line({x: 0, y: canvas.height}, {x: canvas.width, y: canvas.height}, {isStatic: true})
 const box = new Box({x: 250, y: 250}, 50, 50)
 system.insert(box)
 system.insert(leftBound)
@@ -44,30 +44,37 @@ system.insert(topBound)
 system.insert(botBound)
 
 if (context != null) {
-    context.strokeStyle = "#000000"
+    context.strokeStyle = "#00FFFF"
+    // NOTE: Seems like matrix math is being used under the hood, so the transformations are happening in reverse order
+    context.translate(0, canvas.height)
+    context.scale(1, -1)
+
     context.beginPath()
     system.draw(context)
     context.stroke()
 }
 
 const pressedKeys = new Set<string>()
+const speed = 5
+let verticalSpeed = 0
+const gravity = 1
+
 window.addEventListener("keydown", (event: KeyboardEvent) => {
     const key = event.key
-    pressedKeys.add(key)
     match(key)
         .with("w", () => {
-            pressedKeys.delete("s")
+            if (!pressedKeys.has("w")) {
+                verticalSpeed = 15
+            }
         })
         .with("a", () => {
             pressedKeys.delete("d")
-        })
-        .with("s", () => {
-            pressedKeys.delete("w")
         })
         .with("d", () => {
             pressedKeys.delete("a")
         })
         .otherwise(() => null)
+    pressedKeys.add(key)
     console.log(`Keydown: ${key}`)
 })
 
@@ -76,29 +83,29 @@ window.addEventListener('keyup', (event: KeyboardEvent) => {
     console.log(`Key released: ${event.key}`)
 })
 
-const speed = 5
 function updateState() {
-    context!.clearRect(0, 0, canvas.width, canvas.height)
-    context!.beginPath()
-
+    const newY = box.y + verticalSpeed
+    let newX = box.x
     pressedKeys.forEach((key: string) => {
         match(key)
-            .with("w", () => {
-                box.y -= speed
-            })
             .with("a", () => {
-                box.x -= speed
-            })
-            .with("s", () => {
-                box.y += speed
+                newX -= speed
             })
             .with("d", () => {
-                box.x += speed
+                newX += speed
             })
             .otherwise(() => null)
     })
+    box.setPosition(newX, newY)
 
     system.separate()
+    verticalSpeed -= gravity
+    if (system.checkCollision(box, botBound)) {
+        verticalSpeed = 0
+    }
+
+    context!.clearRect(0, 0, canvas.width, canvas.height)
+    context!.beginPath()
     system.draw(context!)
     context!.stroke()
 }
