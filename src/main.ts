@@ -42,8 +42,23 @@ if (context != null) {
 
 const pressedKeys = new Set<string>()
 window.addEventListener("keydown", (event: KeyboardEvent) => {
-    pressedKeys.add(event.key)
-    console.log(`Keydown: ${event.key}`)
+    const key = event.key
+    pressedKeys.add(key)
+    match(key)
+        .with("w", () => {
+            pressedKeys.delete("s")
+        })
+        .with("a", () => {
+            pressedKeys.delete("d")
+        })
+        .with("s", () => {
+            pressedKeys.delete("w")
+        })
+        .with("d", () => {
+            pressedKeys.delete("a")
+        })
+        .otherwise(() => null)
+    console.log(`Keydown: ${key}`)
 })
 
 window.addEventListener('keyup', (event: KeyboardEvent) => {
