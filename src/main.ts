@@ -1,4 +1,4 @@
-import { Box, System } from "detect-collisions"
+import { Box, Line, System } from "detect-collisions"
 import { match } from 'ts-pattern'
 import { setupCounter } from './counter.ts'
 import './style.css'
@@ -26,12 +26,22 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
 
 const canvas = document.createElement("canvas")
+canvas.width = 500
+canvas.height = 500
 document.body.appendChild(canvas)
 const context = canvas.getContext("2d")
 
 const system = new System()
-const box = new Box({x: 1, y: 1}, 50, 50)
+const leftBound = new Line({x: 0, y: 0}, {x: 0, y: canvas.height}, {isStatic: true})
+const rightBound = new Line({x: canvas.width, y: 0}, {x: canvas.width, y: canvas.height}, {isStatic: true})
+const topBound = new Line({x: 0, y: 0}, {x: canvas.width, y: 0}, {isStatic: true})
+const botBound = new Line({x: 0, y: canvas.height}, {x: canvas.width, y: canvas.height}, {isStatic: true})
+const box = new Box({x: 250, y: 250}, 50, 50)
 system.insert(box)
+system.insert(leftBound)
+system.insert(rightBound)
+system.insert(topBound)
+system.insert(botBound)
 
 if (context != null) {
     context.strokeStyle = "#000000"
@@ -66,6 +76,7 @@ window.addEventListener('keyup', (event: KeyboardEvent) => {
     console.log(`Key released: ${event.key}`)
 })
 
+const speed = 5
 function updateState() {
     context!.clearRect(0, 0, canvas.width, canvas.height)
     context!.beginPath()
@@ -73,21 +84,21 @@ function updateState() {
     pressedKeys.forEach((key: string) => {
         match(key)
             .with("w", () => {
-                box.y -= 1
+                box.y -= speed
             })
             .with("a", () => {
-                box.x -= 1
+                box.x -= speed
             })
             .with("s", () => {
-                box.y += 1
+                box.y += speed
             })
             .with("d", () => {
-                box.x += 1
+                box.x += speed
             })
             .otherwise(() => null)
     })
 
-    
+    system.separate()
     system.draw(context!)
     context!.stroke()
 }
