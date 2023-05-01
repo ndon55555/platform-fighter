@@ -58,14 +58,16 @@ if (context != null) {
 const pressedKeys = new Set<string>()
 const speed = 5
 let verticalSpeed = 0
-const gravity = 1
+const gravity = 0.5
+const jumpHeight = canvas.height / 3
 
 window.addEventListener("keydown", (event: KeyboardEvent) => {
     const key = event.key
     match(key)
         .with("w", () => {
             if (!pressedKeys.has("w")) {
-                verticalSpeed = 15
+                // Use the kinematic equation that doesn't contain time to determine initial speed to jump to specific height.
+                verticalSpeed = Math.sqrt(2 * gravity * jumpHeight)
             }
         })
         .with("a", () => {
@@ -85,7 +87,7 @@ window.addEventListener('keyup', (event: KeyboardEvent) => {
 })
 
 function updateState() {
-    let newY = box.y + verticalSpeed//Math.max(box.y + verticalSpeed, 1)
+    let newY = box.y + verticalSpeed
     let newX = box.x
     pressedKeys.forEach((key: string) => {
         match(key)
@@ -100,25 +102,26 @@ function updateState() {
     let oldPosition = { x: box.x, y: box.y }
     let newPosition = { x: newX, y: newY }
 
-    if (system.checkCollision(new Point(newPosition), box)) {
-        newPosition = { x: newX, y: newY + 1 }
-    }
+    if (newPosition.y < oldPosition.y) {
+        if (system.checkCollision(new Point(newPosition), box)) {
+            newPosition = { x: newX, y: newY + 1 }
+        }
 
-    if (!_.isEqual(oldPosition, newPosition)) {
-        const hit = system.raycast(oldPosition, newPosition)
-        if (hit) {
-            const { point, body } = hit
+        if (!_.isEqual(oldPosition, newPosition)) {
+            const hit = system.raycast(oldPosition, newPosition)
+            if (hit) {
+                const { point, body } = hit
 
-
-            if (body == box) {
-                oldPosition = { x: point.x, y: point.y - 1 }
-                const hit2 = system.raycast(oldPosition, newPosition)
-                if (hit2) {
+                if (body == box) {
+                    oldPosition = { x: point.x, y: point.y - 1 }
+                    const hit2 = system.raycast(oldPosition, newPosition)
+                    if (hit2) {
+                        newY = botBound.y + 1
+                    }
+                } else {
                     newY = botBound.y + 1
+                    console.info(oldPosition, newPosition)
                 }
-            } else {
-                newY = botBound.y + 1
-                console.info(oldPosition, newPosition)
             }
         }
     }
