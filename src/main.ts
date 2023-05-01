@@ -110,6 +110,8 @@ function updateState() {
             if (!_.isEqual(oldPosition, newPosition)) {
                 const hit = system.raycast(oldPosition, newPosition)
                 if (hit) {
+                    // TODO: check that the ground was hit
+                    // Set the new y in a higher position so that the shape separation will cause the box to be pushed up
                     newY = botBound.y + 1
                     console.info(oldPosition, newPosition)
                 }
