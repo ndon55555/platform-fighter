@@ -1,10 +1,11 @@
-import { Box, Line, System, Point } from "detect-collisions"
+import { Box, Line, System } from "detect-collisions"
 import _ from 'lodash'
 import { match } from 'ts-pattern'
 import { setupCounter } from './counter.ts'
 import './style.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
+import { defer } from "./util.ts"
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -58,7 +59,7 @@ if (context != null) {
 const pressedKeys = new Set<string>()
 const speed = 5
 let verticalSpeed = 0
-const gravity = 0.5
+const gravity = 1
 const jumpHeight = canvas.height / 3
 
 window.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -99,31 +100,22 @@ function updateState() {
             })
             .otherwise(() => null)
     })
-    let oldPosition = { x: box.x, y: box.y }
-    let newPosition = { x: newX, y: newY }
+    const oldPosition = { x: box.x, y: box.y }
+    const newPosition = { x: newX, y: newY }
 
-    if (newPosition.y < oldPosition.y) {
-        if (system.checkCollision(new Point(newPosition), box)) {
-            newPosition = { x: newX, y: newY + 1 }
-        }
-
-        if (!_.isEqual(oldPosition, newPosition)) {
-            const hit = system.raycast(oldPosition, newPosition)
-            if (hit) {
-                const { point, body } = hit
-
-                if (body == box) {
-                    oldPosition = { x: point.x, y: point.y - 1 }
-                    const hit2 = system.raycast(oldPosition, newPosition)
-                    if (hit2) {
-                        newY = botBound.y + 1
-                    }
-                } else {
+    if (newPosition.y < oldPosition.y) { // Implies the box is falling now
+        // Remove the box from the system temporarily to avoid detection collisions with itself
+        system.remove(box)
+        defer(() => system.insert(box), () => {
+            if (!_.isEqual(oldPosition, newPosition)) {
+                const hit = system.raycast(oldPosition, newPosition)
+                if (hit) {
                     newY = botBound.y + 1
                     console.info(oldPosition, newPosition)
                 }
             }
-        }
+            system.insert(box)
+        })
     }
     box.setPosition(newX, newY)
 
