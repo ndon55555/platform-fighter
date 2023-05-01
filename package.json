@@ -10,6 +10,7 @@
     "lint-autofix": "eslint --fix ."
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.194",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
     "eslint": "^8.39.0",
@@ -18,6 +19,7 @@
   },
   "dependencies": {
     "detect-collisions": "^8.0.1",
+    "lodash": "^4.17.21",
     "ts-pattern": "^4.2.2",
     "two.js": "^0.8.10"
   }
