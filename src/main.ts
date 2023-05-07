@@ -1,12 +1,12 @@
 import { Box, Line, System } from "detect-collisions"
-import { match } from 'ts-pattern'
-import { setupCounter } from './counter.ts'
-import './style.css'
-import typescriptLogo from './typescript.svg'
+import { match } from "ts-pattern"
+import { setupCounter } from "./counter.ts"
+import "./style.css"
+import typescriptLogo from "./typescript.svg"
 import { defer } from "./util.ts"
-import viteLogo from '/vite.svg'
+import viteLogo from "/vite.svg"
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
     <a href="https://vitejs.dev" target="_blank">
       <img src="${viteLogo}" class="logo" alt="Vite logo" />
@@ -24,7 +24,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+setupCounter(document.querySelector<HTMLButtonElement>("#counter")!)
 
 const canvas = document.createElement("canvas")
 canvas.width = 500
@@ -81,7 +81,7 @@ window.addEventListener("keydown", (event: KeyboardEvent) => {
     console.log(`Keydown: ${key}`)
 })
 
-window.addEventListener('keyup', (event: KeyboardEvent) => {
+window.addEventListener("keyup", (event: KeyboardEvent) => {
     pressedKeys.delete(event.key)
     console.log(`Key released: ${event.key}`)
 })
