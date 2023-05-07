@@ -1,4 +1,4 @@
-import { Box, Line, System } from "detect-collisions"
+import { System } from "detect-collisions"
 import { match } from "ts-pattern"
 import { setupCounter } from "./counter.ts"
 import "./style.css"
@@ -33,16 +33,11 @@ document.body.appendChild(canvas)
 const context = canvas.getContext("2d")
 
 const system = new System()
-const leftBound = new Line({ x: 0, y: 0 }, { x: 0, y: canvas.height }, { isStatic: true })
-const rightBound = new Line({ x: canvas.width, y: 0 }, { x: canvas.width, y: canvas.height }, { isStatic: true })
-const botBound = new Line({ x: 0, y: 0 }, { x: canvas.width, y: 0 }, { isStatic: true })
-const topBound = new Line({ x: 0, y: canvas.height }, { x: canvas.width, y: canvas.height }, { isStatic: true })
-const box = new Box({ x: 250, y: 250 }, 50, 50, { isCentered: true })
-system.insert(box)
-system.insert(leftBound)
-system.insert(rightBound)
-system.insert(topBound)
-system.insert(botBound)
+const leftBound = system.createLine({ x: 0, y: 0 }, { x: 0, y: canvas.height }, { isStatic: true })
+const rightBound = system.createLine({ x: canvas.width, y: 0 }, { x: canvas.width, y: canvas.height }, { isStatic: true })
+const botBound = system.createLine({ x: 0, y: 0 }, { x: canvas.width, y: 0 }, { isStatic: true })
+const topBound = system.createLine({ x: 0, y: canvas.height }, { x: canvas.width, y: canvas.height }, { isStatic: true })
+const box1 = system.createBox({ x: 250, y: 250 }, 50, 50, { isCentered: true })
 
 if (context != null) {
     context.strokeStyle = "#00FFFF"
@@ -87,7 +82,7 @@ window.addEventListener("keyup", (event: KeyboardEvent) => {
 })
 
 function nextX() {
-    let newX = box.x
+    let newX = box1.x
     pressedKeys.forEach((key: string) => {
         match(key)
             .with("a", () => {
@@ -103,14 +98,14 @@ function nextX() {
 }
 
 function nextY(nextX: number) {
-    let newY = box.y + verticalSpeed
-    const oldPosition = { x: box.x, y: box.y }
+    let newY = box1.y + verticalSpeed
+    const oldPosition = { x: box1.x, y: box1.y }
     const newPosition = { x: nextX, y: newY }
 
-    if (newY < box.y) { // Implies the box is falling now
+    if (newY < box1.y) { // Implies the box is falling now
         // Remove the box from the system temporarily to avoid detection collisions with itself
-        system.remove(box)
-        defer(() => system.insert(box), () => {
+        system.remove(box1)
+        defer(() => system.insert(box1), () => {
             const hit = system.raycast(oldPosition, newPosition)
             if (hit) {
                 // TODO: check that the ground was hit
@@ -118,7 +113,7 @@ function nextY(nextX: number) {
                 newY = botBound.y + 1
                 console.info(oldPosition, newPosition)
             }
-            system.insert(box)
+            system.insert(box1)
         })
     }
 
@@ -129,11 +124,11 @@ function updateState() {
     // Update box position
     const newX = nextX()
     const newY = nextY(newX)
-    box.setPosition(newX, newY)
+    box1.setPosition(newX, newY)
 
     // Update box speed
     verticalSpeed -= gravity
-    if (system.checkCollision(box, botBound)) {
+    if (system.checkCollision(box1, botBound)) {
         verticalSpeed = 0
     }
 
